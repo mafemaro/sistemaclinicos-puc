@@ -5,95 +5,184 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Clínico PUC</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <section class="hero">
         <div class="hero-texto">
-            <div class="logo">⚕️ SISTEMA clínico</div>
+            <div class="logo"><i class="fa-solid fa-brain"></i> Clínica Psicológica</div>
             <h1>O cuidado com o paciente começa na organização</h1>
             <p>Gerencie cadastros, acompanhe status de consultas e organize a agenda dos profissionais com rapidez e segurança.</p>
             <div class="botoes-hero">
-                <button class="btn" onclick="abrirModal('modal-cadastro')">CADASTRAR PACIENTE</button>
-                <button class="btn btn-vazado" onclick="abrirModal('modal-login')">ENTRAR NO SISTEMA</button>
+                <button class="btn" onclick="abrirModal('modal-cadastro')">
+                    <i class="fa-solid fa-user-plus"></i> Cadastrar Paciente
+                </button>
+                <button class="btn btn-vazado" onclick="abrirModal('modal-login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Entrar no Sistema
+                </button>
             </div>
         </div>
     </section>
 
+    <!-- modal cadastro paciente -->
     <div id="modal-cadastro" class="modal-fundo oculto">
+
+        <!-- etapa 1: formulario -->
         <div id="form-cadastro-caixa" class="modal-caixa">
-            <h2>CADASTRAR PACIENTE</h2>
-            <p>Preencha os dados básicos. O sistema validará a exclusividade do CPF.</p>
-            <form id="form-cadastro" onsubmit="registrarPaciente(event)">
-                <div class="input-grupo">
-                    <input type="text" id="cad-nome" placeholder="Nome completo" required>
+            <div class="modal-header">
+                <div class="modal-header-icone">
+                    <i class="fa-solid fa-user-plus"></i>
                 </div>
-                <div class="input-grupo" id="grupo-cpf">
-                    <input type="text" id="cad-cpf" placeholder="CPF" maxlength="14" oninput="mascaraCPF(this)" required>
-                    <span class="erro-msg">CPF já está cadastrado no sistema.</span>
-                </div>
-                <div class="input-grupo">
-                    <input type="tel" id="cad-tel" placeholder="Telefone" maxlength="15" oninput="mascaraTelefone(this)" required>
-                </div>
-                <div class="input-grupo">
-                    <input type="email" id="cad-email" placeholder="E-mail" required>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">Avançar</button>
-                <p style="margin-top: 15px; cursor: pointer; color: var(--cinza);" onclick="fecharModal('modal-cadastro')">Cancelar</p>
-            </form>
+                <h2>Novo Cadastro</h2>
+                <p>Preencha os dados abaixo para criar sua conta no sistema.</p>
+            </div>
+            <div class="modal-corpo">
+                <form id="form-cadastro" onsubmit="registrarPaciente(event)">
+                    <div class="input-grupo">
+                        <label>Nome completo</label>
+                        <input type="text" id="cad-nome" placeholder="Ex: Maria Fernanda Silva" autocomplete="name" required>
+                    </div>
+                    <div class="campos-duplos">
+                        <div class="input-grupo" id="grupo-cpf">
+                            <label>CPF</label>
+                            <input type="text" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" autocomplete="off" required>
+                            <span class="erro-msg">CPF já cadastrado no sistema.</span>
+                        </div>
+                        <div class="input-grupo">
+                            <label>Telefone</label>
+                            <input type="tel" id="cad-tel" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraTelefone(this)" autocomplete="tel">
+                        </div>
+                    </div>
+                    <div class="input-grupo">
+                        <label>E-mail</label>
+                        <input type="email" id="cad-email" placeholder="seu@email.com" autocomplete="email" required>
+                    </div>
+                    <div class="modal-acoes">
+                        <button type="button" class="btn btn-vazado" onclick="fecharModal('modal-cadastro')">Cancelar</button>
+                        <button type="submit" class="btn">Avançar</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
+        <!-- etapa 2: loading -->
         <div id="loading-cadastro" class="modal-caixa oculto">
-            <div class="spinner"></div>
-            <h3>Processando...</h3>
-            <p>Validando dados e conferindo CPF.</p>
+            <div class="modal-loading-body">
+                <div class="spinner"></div>
+                <h3>Processando cadastro</h3>
+                <p>Validando seus dados e verificando o CPF no sistema...</p>
+            </div>
         </div>
-        
+
+        <!-- etapa 3: sucesso -->
         <div id="sucesso-cadastro" class="modal-caixa oculto">
-            <div class="icone-sucesso">✔️</div>
-            <h2>Bem-vindo!</h2>
-            <p>Seu cadastro foi um sucesso.</p>
-            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="irParaLoginPaciente()">Entrar</button>
+            <div class="modal-sucesso-body">
+                <div class="sucesso-circulo">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2>Cadastro realizado!</h2>
+                <p>Sua conta foi criada com sucesso. Agora você pode visualizar seus agendamentos.</p>
+                <button class="btn" style="width: 100%;" onclick="irParaLoginPaciente()">
+                    <i class="fa-solid fa-calendar-check"></i> Acessar Meus Agendamentos
+                </button>
+            </div>
         </div>
+
     </div>
 
+    <!-- modal login colaboradores -->
     <div id="modal-login" class="modal-fundo oculto">
         <div class="modal-caixa">
-            <h2>LOGIN</h2>
-            <p>Acesso exclusivo para profissionais e recepção.</p>
-            <form onsubmit="fazerLogin(event)">
-                <div class="input-grupo">
-                    <input type="email" id="log-email" placeholder="E-mail" required>
+            <div class="modal-header">
+                <div class="modal-header-icone">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <div class="input-grupo">
-                    <input type="password" id="log-senha" placeholder="Senha" required>
+                <h2>Acesso ao Sistema</h2>
+                <p>Informe suas credenciais e selecione seu perfil de acesso.</p>
+            </div>
+            <div class="modal-corpo">
+                <form onsubmit="fazerLogin(event)">
+                    <div class="campos-duplos">
+                        <div class="input-grupo">
+                            <label>E-mail</label>
+                            <input type="email" id="log-email" placeholder="seu@email.com" autocomplete="email" required>
+                        </div>
+                        <div class="input-grupo">
+                            <label>Senha</label>
+                            <input type="password" id="log-senha" placeholder="••••••••" autocomplete="current-password" required>
+                        </div>
+                    </div>
+
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Perfil de acesso</label>
+                    <div class="perfis-grid">
+                        <div class="perfil-card">
+                            <input type="radio" name="role" id="role-medico" value="medico" required>
+                            <label for="role-medico">
+                                <i class="fa-solid fa-user-doctor"></i>
+                                Psicólogo(a)
+                            </label>
+                        </div>
+                        <div class="perfil-card">
+                            <input type="radio" name="role" id="role-recepcao" value="recepcao">
+                            <label for="role-recepcao">
+                                <i class="fa-solid fa-headset"></i>
+                                Recepcionista
+                            </label>
+                        </div>
+                        <div class="perfil-card">
+                            <input type="radio" name="role" id="role-admin" value="admin">
+                            <label for="role-admin">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                Administrador
+                            </label>
+                        </div>
+                        <div class="perfil-card">
+                            <input type="radio" name="role" id="role-estagiaria" value="estagiaria">
+                            <label for="role-estagiaria">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                Estagiária
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%;">
+                        <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                    </button>
+                </form>
+                <div class="modal-link">
+                    É paciente? <span onclick="fecharModal('modal-login'); abrirModal('modal-login-paciente')">Clique aqui para acessar.</span>
                 </div>
-                <div class="radio-grupo">
-                    <label>
-                        <input type="radio" name="role" value="medico" required> Psicólogo(a)/Doutor(a)
-                    </label>
-                    <label>
-                        <input type="radio" name="role" value="recepcao" required> Recepcionista
-                    </label>
-                    <label>
-                        <input type="radio" name="role" value="admin" required> Administrador
-                    </label>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">Entrar</button>
-                <p style="margin-top: 15px; cursor: pointer; color: var(--azul);" onclick="fecharModal('modal-login'); abrirModal('modal-login-paciente')">Quer entrar como paciente? Clique aqui.</p>
-            </form>
+            </div>
         </div>
     </div>
 
+    <!-- modal login paciente -->
     <div id="modal-login-paciente" class="modal-fundo oculto">
         <div class="modal-caixa">
-            <h2>LOGIN PACIENTE</h2>
-            <form onsubmit="loginPaciente(event)">
-                <div class="input-grupo">
-                    <input type="text" id="log-cpf-paciente" placeholder="CPF" oninput="mascaraCPF(this)" required>
+            <div class="modal-header">
+                <div class="modal-header-icone">
+                    <i class="fa-solid fa-id-card"></i>
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">Acessar Meus Agendamentos</button>
-                <p style="margin-top: 15px; cursor: pointer; color: var(--cinza);" onclick="fecharModal('modal-login-paciente')">Cancelar</p>
-            </form>
+                <h2>Área do Paciente</h2>
+                <p>Informe seu CPF para acessar seus agendamentos.</p>
+            </div>
+            <div class="modal-corpo">
+                <form onsubmit="loginPaciente(event)">
+                    <div class="input-grupo">
+                        <label>CPF cadastrado</label>
+                        <input type="text" id="log-cpf-paciente" placeholder="000.000.000-00" oninput="mascaraCPF(this)" autocomplete="off" required>
+                    </div>
+                    <div class="modal-acoes">
+                        <button type="button" class="btn btn-vazado" onclick="fecharModal('modal-login-paciente')">Cancelar</button>
+                        <button type="submit" class="btn">
+                            <i class="fa-solid fa-calendar-check"></i> Acessar
+                        </button>
+                    </div>
+                </form>
+                <div class="modal-link" style="margin-top: 16px;">
+                    Ainda não tem cadastro? <span onclick="fecharModal('modal-login-paciente'); abrirModal('modal-cadastro')">Cadastre-se aqui.</span>
+                </div>
+            </div>
         </div>
     </div>
 
