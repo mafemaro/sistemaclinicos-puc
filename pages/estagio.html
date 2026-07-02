@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folha de Ponto - Estagiária</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- acesso: estagiaria@puc.br, senha: 123 -->
+
+    <div class="container">
+        <header class="cabecalho">
+            <div class="logo"><i class="fa-solid fa-brain"></i> Folha de Ponto</div>
+            <div class="nav-cabecalho">
+                <strong id="nome-usuario"></strong>
+                <div class="perfil-usuario" onclick="sair()">
+                    <div class="avatar" id="avatar-letra"></div>
+                    <span style="font-size: 13px; color: var(--cinza);">Sair</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- cards de resumo -->
+        <div class="stats-estagio">
+            <div class="card card-verde">
+                <h4><i class="fa-solid fa-clock"></i> Horas Este Mês</h4>
+                <div class="valor" id="total-horas-mes">0h</div>
+            </div>
+            <div class="card">
+                <h4><i class="fa-solid fa-calendar-days"></i> Sessões Este Mês</h4>
+                <div class="valor" id="total-sessoes-mes">0</div>
+            </div>
+            <div class="card card-amarelo">
+                <h4><i class="fa-solid fa-hourglass-half"></i> Média por Sessão</h4>
+                <div class="valor" id="media-horas">0h</div>
+            </div>
+        </div>
+
+        <!-- formulario de lancamento -->
+        <div class="ponto-form">
+            <h3><i class="fa-solid fa-plus-circle" style="color: var(--azul-primario);"></i> Registrar Horas de Estágio</h3>
+
+            <div id="form-ponto-caixa">
+                <div class="form-grade">
+                    <div class="input-grupo">
+                        <label>Data do estágio</label>
+                        <select id="ponto-data">
+                            <!-- populado por js -->
+                        </select>
+                    </div>
+                    <div class="input-grupo">
+                        <label>Horário de entrada</label>
+                        <input type="time" id="ponto-inicio" oninput="calcularPreview()">
+                    </div>
+                    <div class="input-grupo">
+                        <label>Horário de saída</label>
+                        <input type="time" id="ponto-fim" oninput="calcularPreview()">
+                    </div>
+                    <div class="input-grupo span-full">
+                        <label>Resumo das atividades realizadas</label>
+                        <textarea id="ponto-descricao" placeholder="Ex: Atendimento supervisionado de pacientes, reunião de equipe, preenchimento de prontuários..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- calculo em tempo real -->
+                <div class="horas-calculadas">
+                    <span class="label"><i class="fa-solid fa-calculator"></i> Total calculado</span>
+                    <span class="valor-horas" id="preview-horas">—</span>
+                </div>
+
+                <button class="btn" style="width: 100%;" onclick="lancarPonto()">
+                    <i class="fa-solid fa-floppy-disk"></i> Registrar Ponto
+                </button>
+            </div>
+
+            <!-- loading lancamento -->
+            <div id="loading-ponto" class="oculto" style="text-align: center; padding: 20px 0;">
+                <div class="spinner"></div>
+                <p>Salvando registro...</p>
+            </div>
+        </div>
+
+        <!-- historico de registros -->
+        <div class="tabela-container">
+            <div class="tabela-topo">
+                <h3>Histórico de Registros</h3>
+                <button class="btn btn-sm btn-vazado" onclick="limparHistorico()">
+                    <i class="fa-solid fa-trash"></i> Limpar histórico
+                </button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Total</th>
+                        <th>Atividades</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-estagio"></tbody>
+            </table>
+
+            <div id="estado-vazio-estagio" class="estado-vazio oculto">
+                <div class="icone-vazio"><i class="fa-regular fa-clock"></i></div>
+                <p>Nenhum registro lançado ainda. Comece registrando suas horas acima.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // popula select de datas (hoje, ontem, anteontem)
+        function popularDatas() {
+            const select = document.getElementById('ponto-data');
+            select.innerHTML = '';
+
+            const labels = ['Hoje', 'Ontem', 'Anteontem'];
+
+            for (let i = 0; i < 3; i++) {
+                const data = new Date();
+                data.setDate(data.getDate() - i);
+
+                const dd = String(data.getDate()).padStart(2, '0');
+                const mm = String(data.getMonth() + 1).padStart(2, '0');
+                const aaaa = data.getFullYear();
+                const dataBR = `${dd}/${mm}/${aaaa}`;
+
+                const option = document.createElement('option');
+                option.value = dataBR;
+                option.textContent = `${labels[i]} — ${dataBR}`;
+                select.appendChild(option);
+            }
+        }
+
+        // calcula preview de horas em tempo real
+        function calcularPreview() {
+            const inicio = document.getElementById('ponto-inicio').value;
+            const fim = document.getElementById('ponto-fim').value;
+            const previewEl = document.getElementById('preview-horas');
+
+            if (!inicio || !fim) {
+                previewEl.innerText = '—';
+                return;
+            }
+
+            const total = calcularHoras(inicio, fim);
+
+            if (total <= 0) {
+                previewEl.innerText = 'Horário inválido';
+                previewEl.style.color = 'var(--vermelho-erro)';
+            } else {
+                previewEl.innerText = `${total}h`;
+                previewEl.style.color = '';
+            }
+        }
+
+        // registra ponto
+        function lancarPonto() {
+            const data = document.getElementById('ponto-data').value;
+            const inicio = document.getElementById('ponto-inicio').value;
+            const fim = document.getElementById('ponto-fim').value;
+            const descricao = document.getElementById('ponto-descricao').value.trim();
+
+            if (!inicio || !fim) {
+                mostrarToast("Informe o horário de entrada e saída.", "erro");
+                return;
+            }
+
+            if (!descricao) {
+                mostrarToast("Descreva as atividades realizadas.", "erro");
+                return;
+            }
+
+            const totalHoras = calcularHoras(inicio, fim);
+
+            if (totalHoras <= 0) {
+                mostrarToast("O horário de saída deve ser depois do horário de entrada.", "erro");
+                return;
+            }
+
+            // verifica duplicidade na mesma data
+            const registros = obterRegistrosEstagio();
+            const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+            const jaTem = registros.some((r) => r.data === data && r.estagiarioId === usuario.id);
+
+            if (jaTem) {
+                mostrarToast("Já existe um registro para esta data.", "erro");
+                return;
+            }
+
+            const formCaixa = document.getElementById('form-ponto-caixa');
+            const loadingPonto = document.getElementById('loading-ponto');
+
+            formCaixa.classList.add('oculto');
+            loadingPonto.classList.remove('oculto');
+
+            setTimeout(() => {
+                const novoRegistro = {
+                    id: Date.now(),
+                    estagiarioId: usuario.id,
+                    estagiarioNome: usuario.nome,
+                    data: data,
+                    horaInicio: inicio,
+                    horaFim: fim,
+                    totalHoras: totalHoras,
+                    descricao: descricao
+                };
+
+                registros.push(novoRegistro);
+                salvarRegistrosEstagio(registros);
+
+                // reseta form
+                document.getElementById('ponto-inicio').value = '';
+                document.getElementById('ponto-fim').value = '';
+                document.getElementById('ponto-descricao').value = '';
+                document.getElementById('preview-horas').innerText = '—';
+                document.getElementById('preview-horas').style.color = '';
+
+                loadingPonto.classList.add('oculto');
+                formCaixa.classList.remove('oculto');
+
+                atualizarCards();
+                renderizarHistorico();
+                mostrarToast(`${totalHoras}h registradas com sucesso!`, "sucesso");
+            }, 1000);
+        }
+
+        // atualiza cards de resumo
+        function atualizarCards() {
+            const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+            const registros = obterRegistrosEstagio();
+
+            const mesAtual = new Date().getMonth();
+            const anoAtual = new Date().getFullYear();
+
+            // filtra registros do mes atual
+            const registrosMes = registros.filter((r) => {
+                if (!r.estagiarioId || r.estagiarioId !== usuario.id) return false;
+                const [dia, mes, ano] = r.data.split('/');
+                return parseInt(mes) - 1 === mesAtual && parseInt(ano) === anoAtual;
+            });
+
+            const totalHoras = registrosMes.reduce((acc, r) => acc + r.totalHoras, 0);
+            const totalSessoes = registrosMes.length;
+            const media = totalSessoes > 0 ? (totalHoras / totalSessoes).toFixed(1) : 0;
+
+            document.getElementById('total-horas-mes').innerText = `${totalHoras.toFixed(1)}h`;
+            document.getElementById('total-sessoes-mes').innerText = totalSessoes;
+            document.getElementById('media-horas').innerText = `${media}h`;
+        }
+
+        // renderiza historico de registros
+        function renderizarHistorico() {
+            const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+            const registros = obterRegistrosEstagio();
+
+            const meusRegistros = registros
+                .filter((r) => r.estagiarioId === usuario.id)
+                .sort((a, b) => {
+                    return dataParaISO(b.data).localeCompare(dataParaISO(a.data));
+                });
+
+            const tbody = document.getElementById('tabela-estagio');
+            const estadoVazio = document.getElementById('estado-vazio-estagio');
+
+            tbody.innerHTML = '';
+
+            if (meusRegistros.length === 0) {
+                estadoVazio.classList.remove('oculto');
+                return;
+            }
+
+            estadoVazio.classList.add('oculto');
+
+            meusRegistros.forEach((r) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${r.data}</td>
+                        <td>${r.horaInicio}</td>
+                        <td>${r.horaFim}</td>
+                        <td><strong>${r.totalHoras}h</strong></td>
+                        <td style="max-width: 300px; font-size: 14px; color: var(--cinza);">${r.descricao}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // confirma e limpa historico
+        function limparHistorico() {
+            const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+            const registros = obterRegistrosEstagio();
+
+            const meusRegistros = registros.filter((r) => r.estagiarioId === usuario.id);
+
+            if (meusRegistros.length === 0) {
+                mostrarToast("Nenhum registro para remover.", "erro");
+                return;
+            }
+
+            const fundo = document.createElement('div');
+            fundo.className = 'modal-fundo';
+            fundo.id = 'modal-confirma-temp';
+            fundo.innerHTML = `
+                <div class="modal-caixa" style="max-width: 380px;">
+                    <div class="modal-corpo" style="text-align: center;">
+                        <div style="width:56px;height:56px;background:var(--vermelho-fundo);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:var(--vermelho-erro);">
+                            <i class="fa-solid fa-trash"></i>
+                        </div>
+                        <h2 style="margin-bottom:8px;">Limpar histórico?</h2>
+                        <p style="color:var(--cinza);font-size:15px;margin-bottom:28px;">Todos os seus registros serão removidos permanentemente. Essa ação não pode ser desfeita.</p>
+                        <div style="display:flex;gap:12px;">
+                            <button class="btn btn-vazado" style="flex:1;" onclick="document.getElementById('modal-confirma-temp').remove()">Cancelar</button>
+                            <button class="btn btn-perigo" style="flex:1;" onclick="confirmarLimpeza()">Remover tudo</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(fundo);
+        }
+
+        // executa limpeza do historico
+        function confirmarLimpeza() {
+            const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+            const registros = obterRegistrosEstagio();
+
+            // remove apenas os registros deste usuario
+            const restantes = registros.filter((r) => r.estagiarioId !== usuario.id);
+            salvarRegistrosEstagio(restantes);
+
+            document.getElementById('modal-confirma-temp').remove();
+
+            atualizarCards();
+            renderizarHistorico();
+            mostrarToast("Histórico removido com sucesso.", "sucesso");
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!verificarAcesso('estagiaria')) return;
+            carregarCabecalho();
+            popularDatas();
+            atualizarCards();
+            renderizarHistorico();
+        });
+    </script>
+</body>
+</html>
