@@ -18,6 +18,7 @@
     /* tons de cinza e texto */
     --texto-principal: #212529;
     --texto-secundario: #6c757d;
+    --cinza: #6c757d;
     --borda-suave: #dee2e6;
     --fundo-app: #f8f9fa;
     --branco: #ffffff;
@@ -252,7 +253,7 @@ h1, h2, h3, h4 {
 }
 
 /* =========================================
-   Modais (Foco no Glassmorphism)
+   Modais
 ========================================= */
 .modal-fundo {
     position: fixed;
@@ -260,37 +261,247 @@ h1, h2, h3, h4 {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(8px);
+    background-color: rgba(10, 18, 38, 0.65);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 20px;
 }
 
 .modal-caixa {
     background-color: var(--branco);
-    padding: 48px;
-    border-radius: 20px;
+    border-radius: 24px;
     width: 100%;
-    max-width: 480px;
-    text-align: center;
-    box-shadow: var(--sombra-modal);
+    max-width: 500px;
+    text-align: left;
+    box-shadow: 0 32px 64px -12px rgba(0,0,0,0.18), 0 8px 24px -4px rgba(0,0,0,0.1);
     animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
 }
 
-.modal-caixa h2 {
-    margin-bottom: 12px;
-    color: var(--texto-principal);
+/* cabecalho colorido do modal */
+.modal-header {
+    background: linear-gradient(135deg, var(--azul-primario) 0%, #4f46e5 100%);
+    padding: 32px 36px 28px;
+    position: relative;
+    overflow: hidden;
 }
 
-.modal-caixa p {
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+}
+
+.modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+}
+
+.modal-header-icone {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-header h2 {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* corpo do modal */
+.modal-corpo {
+    padding: 32px 36px 36px;
+}
+
+/* grade de dois campos lado a lado */
+.campos-duplos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+}
+
+/* botoes do modal lado a lado */
+.modal-acoes {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.modal-acoes .btn {
+    flex: 1;
+}
+
+/* modal de sucesso */
+.modal-sucesso-body {
+    padding: 48px 36px;
+    text-align: center;
+}
+
+.sucesso-circulo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--verde-sucesso), #16a34a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(25,135,84,0.35);
+    animation: pular 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-sucesso-body h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.modal-sucesso-body p {
     color: var(--texto-secundario);
-    margin-bottom: 30px;
     font-size: 15px;
+    margin-bottom: 28px;
 }
 
-/* Customizacao de Radio Buttons */
+/* modal de loading */
+.modal-loading-body {
+    padding: 52px 36px;
+    text-align: center;
+}
+
+.modal-loading-body h3 {
+    margin: 20px 0 8px;
+    font-size: 18px;
+}
+
+.modal-loading-body p {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* perfis de acesso (radio cards) */
+.perfis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 4px 0 24px;
+}
+
+.perfil-card {
+    position: relative;
+}
+
+.perfil-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.perfil-card label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    border: 2px solid var(--borda-suave);
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    transition: all 0.2s ease;
+    background-color: var(--fundo-app);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.perfil-card label i {
+    font-size: 20px;
+    color: var(--texto-secundario);
+    transition: color 0.2s;
+}
+
+.perfil-card input[type="radio"]:checked + label {
+    border-color: var(--azul-primario);
+    background-color: var(--azul-claro);
+    color: var(--azul-primario);
+}
+
+.perfil-card input[type="radio"]:checked + label i {
+    color: var(--azul-primario);
+}
+
+.perfil-card label:hover {
+    border-color: var(--azul-primario);
+    background-color: var(--azul-claro);
+    color: var(--azul-primario);
+}
+
+.perfil-card label:hover i {
+    color: var(--azul-primario);
+}
+
+/* link de navegacao entre modais */
+.modal-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--texto-secundario);
+}
+
+.modal-link a,
+.modal-link span {
+    color: var(--azul-primario);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.modal-link span:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+/* Customizacao legada Radio Buttons (mantido para compat.) */
 .radio-grupo {
     display: flex;
     gap: 20px;
@@ -311,6 +522,25 @@ h1, h2, h3, h4 {
 
 .radio-grupo label:hover {
     color: var(--azul-primario);
+}
+
+@media (max-width: 520px) {
+    .modal-header {
+        padding: 24px 24px 20px;
+    }
+    .modal-corpo {
+        padding: 24px 24px 28px;
+    }
+    .campos-duplos {
+        grid-template-columns: 1fr;
+    }
+    .perfis-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .modal-sucesso-body,
+    .modal-loading-body {
+        padding: 36px 24px;
+    }
 }
 
 /* Animacoes do Loading e Sucesso */
@@ -517,6 +747,395 @@ tr:last-child td {
 /* =========================================
    Responsividade (Mobile)
 ========================================= */
+/* =========================================
+   Botoes Variantes
+========================================= */
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+}
+
+.btn-perigo {
+    background-color: var(--vermelho-erro);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.btn-perigo:hover {
+    background-color: #b02a37;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-sucesso {
+    background-color: var(--verde-sucesso);
+    box-shadow: 0 2px 4px rgba(25, 135, 84, 0.2);
+}
+
+.btn-sucesso:hover {
+    background-color: #146c43;
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+}
+
+/* =========================================
+   Cards com Variacoes de Cor
+========================================= */
+.card-verde {
+    border-top-color: var(--verde-sucesso);
+}
+
+.card-amarelo {
+    border-top-color: var(--amarelo-alerta);
+}
+
+.card-vermelho {
+    border-top-color: var(--vermelho-erro);
+}
+
+/* =========================================
+   Barra de Filtros e Pesquisa
+========================================= */
+.filtros-barra {
+    background-color: var(--branco);
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: var(--sombra-card);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.filtro-grupo label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+    padding: 10px 14px;
+    border: 1px solid var(--borda-suave);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--texto-principal);
+    background-color: var(--branco);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.filtro-grupo input:focus,
+.filtro-grupo select:focus {
+    border-color: var(--azul-primario);
+    outline: none;
+    box-shadow: var(--anel-foco);
+}
+
+.barra-busca {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.barra-busca input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--borda-suave);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--texto-principal);
+    background-color: var(--branco);
+    transition: all 0.2s ease;
+}
+
+.barra-busca input:focus {
+    border-color: var(--azul-primario);
+    outline: none;
+    box-shadow: var(--anel-foco);
+}
+
+/* =========================================
+   Status Badges Expandidos
+========================================= */
+.status.cancelada {
+    background-color: var(--vermelho-fundo);
+    color: var(--vermelho-erro);
+}
+
+.status.falta {
+    background-color: #e2e3e5;
+    color: #41464b;
+}
+
+/* =========================================
+   Destacar linhas da tabela
+========================================= */
+.linha-presente {
+    background-color: #f0fdf4 !important;
+    border-left: 3px solid var(--verde-sucesso);
+}
+
+.linha-presente td:first-child {
+    padding-left: 13px;
+}
+
+/* =========================================
+   Estado Vazio (tabela sem dados)
+========================================= */
+.estado-vazio {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--texto-secundario);
+}
+
+.estado-vazio .icone-vazio {
+    font-size: 56px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+.estado-vazio p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/* =========================================
+   Badge de Lembrete
+========================================= */
+.badge-lembrete {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--amarelo-fundo);
+    color: #997404;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* =========================================
+   Cabecalho da Tabela (titulo + acoes)
+========================================= */
+.tabela-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.tabela-acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* =========================================
+   Menu Mobile Hamburguer
+========================================= */
+.menu-hamburguer {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: var(--texto-principal);
+    font-size: 22px;
+    transition: background 0.2s;
+}
+
+.menu-hamburguer:hover {
+    background-color: var(--fundo-app);
+}
+
+.nav-cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+/* =========================================
+   Abas de Navegacao
+========================================= */
+.abas {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    background-color: var(--fundo-app);
+    padding: 4px;
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.aba {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+}
+
+.aba:hover {
+    color: var(--azul-primario);
+    background-color: var(--branco);
+}
+
+.aba.ativa {
+    background-color: var(--branco);
+    color: var(--azul-primario);
+    box-shadow: var(--sombra-card);
+}
+
+/* =========================================
+   Painel Estagio (Folha de Ponto)
+========================================= */
+.ponto-form {
+    background-color: var(--branco);
+    padding: 36px;
+    border-radius: 16px;
+    box-shadow: var(--sombra-card);
+    margin-bottom: 32px;
+}
+
+.ponto-form h3 {
+    margin-bottom: 24px;
+    font-size: 18px;
+}
+
+.form-grade {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.form-grade .span-full {
+    grid-column: 1 / -1;
+}
+
+.input-grupo textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--borda-suave);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--texto-principal);
+    background-color: var(--branco);
+    transition: all 0.2s ease;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.input-grupo textarea:focus {
+    border-color: var(--azul-primario);
+    outline: none;
+    box-shadow: var(--anel-foco);
+}
+
+.input-grupo select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--borda-suave);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--texto-principal);
+    background-color: var(--branco);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.input-grupo select:focus {
+    border-color: var(--azul-primario);
+    outline: none;
+    box-shadow: var(--anel-foco);
+}
+
+.horas-calculadas {
+    background: linear-gradient(135deg, var(--azul-claro), #dbeafe);
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.horas-calculadas .label {
+    font-size: 14px;
+    color: var(--texto-secundario);
+    font-weight: 500;
+}
+
+.horas-calculadas .valor-horas {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--azul-primario);
+}
+
+.stats-estagio {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.stats-estagio .card {
+    flex: 1;
+}
+
+/* =========================================
+   Indicador de Atualizacao
+========================================= */
+.indicador-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--verde-sucesso);
+    font-weight: 600;
+}
+
+.ponto-live {
+    width: 8px;
+    height: 8px;
+    background-color: var(--verde-sucesso);
+    border-radius: 50%;
+    animation: piscar 1.5s ease-in-out infinite;
+}
+
+@keyframes piscar {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* =========================================
+   Responsividade (Mobile)
+========================================= */
 @media (max-width: 768px) {
     .hero {
         flex-direction: column;
@@ -530,7 +1149,7 @@ tr:last-child td {
     }
 
     .hero-texto h1 {
-        font-size: 36px;
+        font-size: 32px;
     }
 
     .botoes-hero {
@@ -545,14 +1164,80 @@ tr:last-child td {
     .cards {
         flex-direction: column;
     }
+
+    .stats-estagio {
+        flex-direction: column;
+    }
     
     .cabecalho {
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .menu-hamburguer {
+        display: block;
+    }
+
+    .nav-cabecalho {
+        width: 100%;
+        justify-content: space-between;
     }
     
     .modal-caixa {
-        padding: 30px 20px;
-        margin: 20px;
+        padding: 28px 20px;
+        margin: 16px;
+    }
+
+    .radio-grupo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .filtros-barra {
+        flex-direction: column;
+    }
+
+    .filtro-grupo {
+        width: 100%;
+    }
+
+    .barra-busca {
+        flex-direction: column;
+    }
+
+    .barra-busca input {
+        width: 100%;
+    }
+
+    .tabela-topo {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tabela-acoes {
+        width: 100%;
+    }
+
+    .form-grade {
+        grid-template-columns: 1fr;
+    }
+
+    .abas {
+        width: 100%;
+    }
+
+    .aba {
+        flex: 1;
+        text-align: center;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .horas-calculadas {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
     }
 }
