@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel da Recepção</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- para entrar como recepcionista, use o email: recepcionista@puc.br, senha: 123 -->
+    
+    <div class="container">
+        <header class="cabecalho">
+            <div class="logo">⚕️ Recepção</div>
+            <div class="perfil-usuario" onclick="sair()">
+                <strong id="nome-usuario"></strong>
+                <div class="avatar" id="avatar-letra"></div>
+            </div>
+        </header>
+
+        <h2>Agenda do Dia - Check-in</h2>
+        
+        <div class="tabela-container" style="margin-top: 20px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Paciente</th>
+                        <th>Profissional</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-recepcao"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // carrega lista recepcao
+        function carregarLista() {
+            carregarCabecalho();
+            
+            const stringConsultas = localStorage.getItem('consultas') || '[]';
+            const consultas = JSON.parse(stringConsultas);
+            
+            const tbody = document.getElementById('tabela-recepcao');
+            tbody.innerHTML = '';
+            
+            consultas.forEach((c) => {
+                let btnHtml = '';
+                
+                if (c.status === 'presente') {
+                    btnHtml = `<span class="status presente">Concluído</span>`;
+                } else {
+                    btnHtml = `<button class="btn" onclick="registrarCheckin(${c.id}, this)">Registrar Presença</button>`;
+                }
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${c.horario}</td>
+                        <td>${c.paciente}</td>
+                        <td>${c.profissional}</td>
+                        <td>${btnHtml}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // faz check-in
+        function registrarCheckin(id, botao) {
+            botao.innerText = "Processando...";
+            botao.disabled = true;
+            
+            setTimeout(() => {
+                const stringConsultas = localStorage.getItem('consultas');
+                let consultas = JSON.parse(stringConsultas);
+                
+                const index = consultas.findIndex((c) => {
+                    return c.id === id;
+                });
+                
+                consultas[index].status = 'presente';
+                
+                localStorage.setItem('consultas', JSON.stringify(consultas));
+                carregarLista();
+                mostrarToast("Check-in realizado com sucesso!", "sucesso");
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarLista);
+    </script>
+</body>
+</html>

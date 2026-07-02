@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Agendamentos</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="cabecalho">
+            <div class="logo">⚕️ SISTEMA</div>
+            <div class="perfil-usuario" onclick="sair()">
+                <strong id="nome-usuario">Paciente</strong>
+                <div class="avatar" id="avatar-letra">P</div>
+            </div>
+        </header>
+
+        <h2>Meus Agendamentos</h2>
+        <p style="color: var(--cinza); margin-bottom: 20px;">Lembrete: Você receberá notificações 24h antes da consulta.</p>
+
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th>Profissional</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-consultas"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarCabecalho();
+            
+            const dadosSessao = sessionStorage.getItem('usuarioLogado');
+            const usuario = JSON.parse(dadosSessao);
+            
+            const stringConsultas = localStorage.getItem('consultas') || '[]';
+            const consultas = JSON.parse(stringConsultas);
+            
+            const minhasConsultas = consultas.filter((c) => {
+                return c.pacienteId === usuario.id;
+            });
+            
+            const tbody = document.getElementById('lista-consultas');
+            
+            minhasConsultas.forEach((c) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${c.data} 🔔</td>
+                        <td>${c.horario}</td>
+                        <td>${c.profissional}</td>
+                        <td><span class="status ${c.status}">${c.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

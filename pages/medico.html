@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda do Profissional</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- para entrar como médico, use o email: psicologa@puc.br, senha: 123 -->
+    
+    <div class="container">
+        <header class="cabecalho">
+            <div class="logo">⚕️ Consultório</div>
+            <div class="perfil-usuario" onclick="sair()">
+                <strong id="nome-usuario"></strong>
+                <div class="avatar" id="avatar-letra"></div>
+            </div>
+        </header>
+
+        <h2>Sua Agenda Diária</h2>
+        
+        <div class="tabela-container" style="margin-top: 20px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Paciente</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-medico"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // renderiza agenda medico
+        function atualizarAgenda() {
+            const stringConsultas = localStorage.getItem('consultas') || '[]';
+            const consultas = JSON.parse(stringConsultas);
+            
+            const minhasConsultas = consultas.filter((c) => {
+                return c.profissional.includes('Juliana');
+            });
+            
+            const tbody = document.getElementById('tabela-medico');
+            tbody.innerHTML = '';
+            
+            minhasConsultas.forEach((c) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${c.horario}</td>
+                        <td><strong>${c.paciente}</strong></td>
+                        <td><span class="status ${c.status}">${c.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarCabecalho();
+            atualizarAgenda();
+            
+            // simula websocket
+            setInterval(atualizarAgenda, 2000); 
+        });
+    </script>
+</body>
+</html>

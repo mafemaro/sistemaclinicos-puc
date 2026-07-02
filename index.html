@@ -3,141 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Clínico</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Sistema Clínico PUC</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-    <section id="inicio" class="surgir">
-        <div class="destaque subir">
-            <div class="esq">
-                <div class="logo">
-                    <span class="icone">⚕️</span> SISTEMA clínico
-                </div>
-                <h1>O cuidado com o paciente começa na organização</h1>
-                <p>Gerencie cadastros, acompanhe status de consultas e organize a agenda dos profissionais com rapidez e segurança.</p>
-                <button class="botao" onclick="abrir()">CADASTRAR PACIENTE</button>
-            </div>
-            <div class="dir">
-                <h3>Com o Sistema de Clínicas você tem:</h3>
-                <ul class="lista">
-                    <li>Cadastro seguro de pacientes com verificação unívoca.</li>
-                    <li>Gestão eficiente da agenda e profissionais.</li>
-                    <li>Rastreabilidade total de faturamento e prontuário.</li>
-                </ul>
-                <img src="image-removebg-preview 1.jpg" alt="Equipe" class="imagem">
+    <section class="hero">
+        <div class="hero-texto">
+            <div class="logo">⚕️ SISTEMA clínico</div>
+            <h1>O cuidado com o paciente começa na organização</h1>
+            <p>Gerencie cadastros, acompanhe status de consultas e organize a agenda dos profissionais com rapidez e segurança.</p>
+            <div class="botoes-hero">
+                <button class="btn" onclick="abrirModal('modal-cadastro')">CADASTRAR PACIENTE</button>
+                <button class="btn btn-vazado" onclick="abrirModal('modal-login')">ENTRAR NO SISTEMA</button>
             </div>
         </div>
     </section>
 
-    <div id="fundo" class="oculto">
-        
-        <div id="form-caixa" class="caixa">
-            <div class="logo centro">SISTEMA clínico</div>
+    <div id="modal-cadastro" class="modal-fundo oculto">
+        <div id="form-cadastro-caixa" class="modal-caixa">
             <h2>CADASTRAR PACIENTE</h2>
-            <p class="texto">Preencha os dados básicos. Validaremos o CPF.</p>
-            
-            <form id="form-dados" onsubmit="salvar(event)">
-                <div class="campo">
-                    <input type="text" id="nome" placeholder="Nome completo" required>
+            <p>Preencha os dados básicos. O sistema validará a exclusividade do CPF.</p>
+            <form id="form-cadastro" onsubmit="registrarPaciente(event)">
+                <div class="input-grupo">
+                    <input type="text" id="cad-nome" placeholder="Nome completo" required>
                 </div>
-                <div class="campo" id="caixa-cpf">
-                    <input type="text" id="cpf" placeholder="CPF (Digite '000' para erro)" required>
-                    <span class="erro">⚠️ O CPF já está cadastrado.</span>
+                <div class="input-grupo" id="grupo-cpf">
+                    <input type="text" id="cad-cpf" placeholder="CPF" maxlength="14" oninput="mascaraCPF(this)" required>
+                    <span class="erro-msg">CPF já está cadastrado no sistema.</span>
                 </div>
-                <div class="campo">
-                    <input type="tel" id="telefone" placeholder="Telefone" required>
+                <div class="input-grupo">
+                    <input type="tel" id="cad-tel" placeholder="Telefone" maxlength="15" oninput="mascaraTelefone(this)" required>
                 </div>
-                <div class="campo">
-                    <input type="email" id="email" placeholder="E-mail" required>
+                <div class="input-grupo">
+                    <input type="email" id="cad-email" placeholder="E-mail" required>
                 </div>
-                <button type="submit" class="botao largo">Avançar</button>
-                <p class="cancelar" onclick="fechar()">Cancelar e voltar</p>
+                <button type="submit" class="btn" style="width: 100%;">Avançar</button>
+                <p style="margin-top: 15px; cursor: pointer; color: var(--cinza);" onclick="fecharModal('modal-cadastro')">Cancelar</p>
             </form>
         </div>
 
-        <div id="carregando" class="caixa oculto">
-            <div class="girador"></div>
+        <div id="loading-cadastro" class="modal-caixa oculto">
+            <div class="spinner"></div>
             <h3>Processando...</h3>
-            <p class="texto">Validando CPF no banco de dados.</p>
+            <p>Validando dados e conferindo CPF.</p>
         </div>
-
-        <div id="sucesso" class="caixa oculto">
-            <div class="icone-ok subir">✔️</div>
-            <h2 class="subir">Bem-vindo!</h2>
-            <p class="texto subir">Cadastro salvo com sucesso.</p>
-            <button class="botao largo subir" onclick="irAgenda()">Avançar para Consultas</button>
+        
+        <div id="sucesso-cadastro" class="modal-caixa oculto">
+            <div class="icone-sucesso">✔️</div>
+            <h2>Bem-vindo!</h2>
+            <p>Seu cadastro foi um sucesso.</p>
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="irParaLoginPaciente()">Entrar</button>
         </div>
     </div>
 
-    <section id="agenda" class="oculto">
-        <div class="topo descer">
-            <div class="logo"><span class="icone">⚕️</span> SISTEMA clínico</div>
-            <div class="perfil">
-                <strong>Agenda</strong>
-                <div class="avatar">M</div>
-            </div>
-        </div>
-
-        <div class="surgir">
-            <h2>Olá, usuário! 👋</h2>
-            <p class="texto" style="margin-bottom: 30px;">Resumo da sua agenda de hoje.</p>
-        </div>
-
-        <div class="cartoes subir">
-            <div class="cartao">
-                <h4>consultas hoje</h4>
-                <div class="valor">12</div>
-            </div>
-            <div class="cartao">
-                <h4>aguardando</h4>
-                <div class="valor">03</div>
-            </div>
-            <div class="cartao">
-                <h4>disponíveis</h4>
-                <div class="valor">05</div>
-            </div>
-        </div>
-
-        <div class="tabela subir">
-            <div class="topo-tabela">
-                <h3>PRÓXIMOS ATENDIMENTOS <span class="link">Ver agenda ></span></h3>
-                <div class="acoes">
-                    <button class="botao pequeno">Novo agendamento</button>
-                    <button class="vazado">Filtrar</button>
+    <div id="modal-login" class="modal-fundo oculto">
+        <div class="modal-caixa">
+            <h2>LOGIN</h2>
+            <p>Acesso exclusivo para profissionais e recepção.</p>
+            <form onsubmit="fazerLogin(event)">
+                <div class="input-grupo">
+                    <input type="email" id="log-email" placeholder="E-mail" required>
                 </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Paciente</th>
-                        <th>Data</th>
-                        <th>Horário</th>
-                        <th>Profissional</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="linha">
-                        <td><strong>Ana Beatriz Sousa</strong></td>
-                        <td>02/07/2026</td>
-                        <td>14:00</td>
-                        <td>Dra. Carla (Psicologia)</td>
-                        <td><span class="etiqueta">Confirmado</span></td>
-                    </tr>
-                    <tr class="linha">
-                        <td><strong>João Pedro Silva</strong></td>
-                        <td>02/07/2026</td>
-                        <td>15:30</td>
-                        <td>Dr. Carlos (Cardiologia)</td>
-                        <td><span class="etiqueta">Confirmado</span></td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="input-grupo">
+                    <input type="password" id="log-senha" placeholder="Senha" required>
+                </div>
+                <div class="radio-grupo">
+                    <label>
+                        <input type="radio" name="role" value="medico" required> Psicólogo(a)/Doutor(a)
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="recepcao" required> Recepcionista
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="admin" required> Administrador
+                    </label>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+                <p style="margin-top: 15px; cursor: pointer; color: var(--azul);" onclick="fecharModal('modal-login'); abrirModal('modal-login-paciente')">Quer entrar como paciente? Clique aqui.</p>
+            </form>
         </div>
-    </section>
+    </div>
 
-    <script src="script.js"></script>
+    <div id="modal-login-paciente" class="modal-fundo oculto">
+        <div class="modal-caixa">
+            <h2>LOGIN PACIENTE</h2>
+            <form onsubmit="loginPaciente(event)">
+                <div class="input-grupo">
+                    <input type="text" id="log-cpf-paciente" placeholder="CPF" oninput="mascaraCPF(this)" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Acessar Meus Agendamentos</button>
+                <p style="margin-top: 15px; cursor: pointer; color: var(--cinza);" onclick="fecharModal('modal-login-paciente')">Cancelar</p>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
